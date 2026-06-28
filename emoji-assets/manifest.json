@@ -1,0 +1,23 @@
+[
+  {
+    "name": "customer_experience",
+    "id": "1493599402303164560",
+    "animated": false,
+    "file": "customer_experience.png",
+    "bytes": 3555
+  },
+  {
+    "name": "OptiDesk",
+    "id": "1424689695207587870",
+    "animated": false,
+    "file": "OptiDesk.png",
+    "bytes": 2870
+  },
+  {
+    "name": "priority",
+    "id": "1489839906904608778",
+    "animated": false,
+    "file": "priority.png",
+    "bytes": 2114
+  }
+]

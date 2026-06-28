@@ -1,0 +1,39 @@
+{
+  "name": "optidesk",
+  "version": "0.5.0",
+  "description": "A Discord support ticket bot with self-hosted and cloud deployment profiles.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liiaamm/optidesk.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "discord",
+    "discord-bot",
+    "ticketing",
+    "support",
+    "dynamodb"
+  ],
+  "scripts": {
+    "start": "node .",
+    "commands": "node deploy-commands.js",
+    "emojis": "node scripts/download-emoji-pack.js",
+    "test": "jest",
+    "lint": "eslint . --ext .js"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "discord.js": "^14.22.1",
+    "dynalite": "^4.0.0",
+    "posthog-node": "^5.21.2"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "ajv": "^6.14.0",
+    "eslint": "^8.57.1",
+    "jest": "^30.2.0"
+  }
+}

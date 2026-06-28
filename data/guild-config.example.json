@@ -1,0 +1,60 @@
+{
+  "serverId": "000000000000000000",
+  "access": {
+    "supervisorRoleID": "000000000000000000",
+    "supportMemberRoleID": null,
+    "blacklistRoleID": "000000000000000000",
+    "priorityRoles": [],
+    "pingOnPriorityRoles": []
+  },
+  "appearance": {
+    "defaultHexColor": "9DE8E4",
+    "emojiSet": "OptiDeskEmojis",
+    "footer": "OptiDesk",
+    "funnyResponses": false,
+    "serverIconEmoji": null,
+    "serverLogoURL": null
+  },
+  "layout": {
+    "transcriptChannelId": null,
+    "loggingChannelId": null,
+    "categories": {
+      "General Support": {
+        "channelId": "000000000000000000",
+        "inboxId": "000000000000000000",
+        "anonymous": false,
+        "description": "General help and questions.",
+        "emoji": "💬",
+        "staffRoleId": "000000000000000000",
+        "supervisorRoleId": null,
+        "requiredRoleId": null
+      }
+    },
+    "categoryOrder": [
+      "General Support"
+    ],
+    "intellitags": {},
+    "presets": {
+      "closeRequestMessage": "If your issue has been resolved, please press 'Close'. Otherwise, press 'Ignore' and we'll continue to help you.",
+      "openTicket": {
+        "banner": {
+          "url": null,
+          "altText": "Support ticket banner"
+        },
+        "openTicketMessage": "## Welcome!\nThank you for opening a support ticket. A team member will help you shortly. Please describe your issue in as much detail as possible."
+      },
+      "panel": {
+        "message": null,
+        "modalIntro": null
+      },
+      "queueMessage": "Thank you for reaching out. Your request has been queued — please wait for a team member to assist you."
+    }
+  },
+  "settings": {
+    "addNonStaffToTickets": true,
+    "interactiveSupportEnabled": true,
+    "transcriptsEnabled": false,
+    "loggingEnabled": false,
+    "transcriptsTrusted": false
+  }
+}

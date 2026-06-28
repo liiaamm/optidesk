@@ -1,0 +1,408 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://optidesk.dev/schemas/guild-config.schema.json",
+  "title": "OptiDesk guild configuration",
+  "description": "Configuration document stored in OptiDeskGuildConfigs and sourced from data/guild-config.json for local single-tenant installs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "serverId",
+    "access",
+    "appearance",
+    "layout",
+    "settings"
+  ],
+  "properties": {
+    "serverId": {
+      "$ref": "#/definitions/discordSnowflake"
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "supervisorRoleID",
+        "blacklistRoleID",
+        "priorityRoles",
+        "pingOnPriorityRoles"
+      ],
+      "properties": {
+        "supervisorRoleID": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Global supervisor/admin role. Members with this role bypass category staff checks."
+        },
+        "supportMemberRoleID": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Role considered staff when settings.addNonStaffToTickets is false."
+        },
+        "blacklistRoleID": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Members with this role cannot open tickets."
+        },
+        "priorityRoles": {
+          "$ref": "#/definitions/discordSnowflakeArray",
+          "description": "User roles that mark newly opened tickets as priority."
+        },
+        "pingOnPriorityRoles": {
+          "$ref": "#/definitions/discordSnowflakeArray",
+          "description": "Roles pinged in the inbox when a priority ticket enters queue."
+        }
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "defaultHexColor",
+        "emojiSet",
+        "footer",
+        "funnyResponses",
+        "serverIconEmoji",
+        "serverLogoURL"
+      ],
+      "properties": {
+        "defaultHexColor": {
+          "$ref": "#/definitions/hexColor",
+          "description": "Default accent color used for ticket and panel components."
+        },
+        "emojiSet": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Emoji set key loaded by utils/emojiLoader."
+        },
+        "footer": {
+          "type": "string",
+          "description": "Footer text rendered on ticket and panel components."
+        },
+        "funnyResponses": {
+          "type": "boolean",
+          "description": "Enables optional randomized copy in supported actions."
+        },
+        "serverIconEmoji": {
+          "$ref": "#/definitions/nullableString",
+          "description": "Optional emoji or custom emoji markup for server branding."
+        },
+        "serverLogoURL": {
+          "$ref": "#/definitions/nullableUrl",
+          "description": "Optional logo shown in supported staff/customer messages."
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transcriptChannelId",
+        "loggingChannelId",
+        "categories",
+        "presets"
+      ],
+      "properties": {
+        "transcriptChannelId": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Channel used for transcript posts when transcripts are enabled."
+        },
+        "loggingChannelId": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Channel used for operational logs when logging is enabled."
+        },
+        "categoryOrder": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true,
+          "description": "Optional display order for category names in the panel."
+        },
+        "categories": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/category"
+          },
+          "description": "Ticket categories keyed by the user-facing category name."
+        },
+        "intellitags": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "additionalProperties": {
+            "$ref": "#/definitions/intellitag"
+          },
+          "description": "Optional deterministic keyword responders for newly opened tickets."
+        },
+        "presets": {
+          "$ref": "#/definitions/presets"
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "interactiveSupportEnabled",
+        "transcriptsEnabled",
+        "loggingEnabled",
+        "transcriptsTrusted"
+      ],
+      "properties": {
+        "interactiveSupportEnabled": {
+          "type": "boolean"
+        },
+        "transcriptsEnabled": {
+          "type": "boolean"
+        },
+        "loggingEnabled": {
+          "type": "boolean"
+        },
+        "transcriptsTrusted": {
+          "type": "boolean",
+          "description": "Whether generated transcripts should trust rendered user content."
+        },
+        "addNonStaffToTickets": {
+          "type": "boolean",
+          "description": "When false, the Add action only permits members with access.supportMemberRoleID."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "discordSnowflake": {
+      "type": "string",
+      "pattern": "^[0-9]{17,20}$"
+    },
+    "nullableDiscordSnowflake": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/discordSnowflake"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "discordSnowflakeArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/discordSnowflake"
+      },
+      "uniqueItems": true
+    },
+    "nullableString": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#?[0-9A-Fa-f]{6}$"
+    },
+    "componentColor": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777215
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      ]
+    },
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channelId",
+        "inboxId",
+        "staffRoleId"
+      ],
+      "properties": {
+        "channelId": {
+          "$ref": "#/definitions/discordSnowflake",
+          "description": "Parent channel where private ticket threads are created."
+        },
+        "inboxId": {
+          "$ref": "#/definitions/discordSnowflake",
+          "description": "Staff inbox channel for claim/queue notifications."
+        },
+        "anonymous": {
+          "type": "boolean",
+          "default": false
+        },
+        "description": {
+          "$ref": "#/definitions/nullableString",
+          "description": "Optional panel select-menu description."
+        },
+        "emoji": {
+          "$ref": "#/definitions/nullableString",
+          "description": "Optional unicode emoji, custom emoji markup, or emoji ID for the panel option."
+        },
+        "staffRoleId": {
+          "$ref": "#/definitions/discordSnowflake",
+          "description": "Role allowed to handle tickets in this category."
+        },
+        "supervisorRoleId": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Optional category-level supervisor role."
+        },
+        "requiredRoleId": {
+          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "description": "Optional user role required to open tickets in this category."
+        }
+      }
+    },
+    "intellitag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "triggerKeywords",
+        "accentColor",
+        "content"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "triggerKeywords": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "accentColor": {
+          "$ref": "#/definitions/componentColor"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headerImage": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/media"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "queueBehavior": {
+          "enum": [
+            "true",
+            "false"
+          ],
+          "description": "String values match the current parser in tickets/tag.js."
+        }
+      }
+    },
+    "media": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "description"
+      ],
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "presets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "closeRequestMessage",
+        "openTicket",
+        "queueMessage"
+      ],
+      "properties": {
+        "closeRequestMessage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openTicket": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "openTicketMessage"
+          ],
+          "properties": {
+            "openTicketMessage": {
+              "type": "string",
+              "minLength": 1
+            },
+            "banner": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "url",
+                "altText"
+              ],
+              "properties": {
+                "url": {
+                  "$ref": "#/definitions/nullableUrl"
+                },
+                "altText": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        },
+        "panel": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "message": {
+              "$ref": "#/definitions/nullableString"
+            },
+            "modalIntro": {
+              "$ref": "#/definitions/nullableString"
+            }
+          }
+        },
+        "queueMessage": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

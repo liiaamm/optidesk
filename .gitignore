@@ -1,0 +1,11 @@
+node_modules
+config.json
+data/guild-config.json
+data/dynamo/
+backendutils/
+optidesk-runner.js
+optidesk.exe
+optidesk.ps1
+\#*\#
+scripts/send-flag-preview.js
+emoji-packs/

@@ -1,0 +1,24 @@
+{
+  "token": "YOUR_DISCORD_BOT_TOKEN",
+  "clientId": "YOUR_DISCORD_APPLICATION_CLIENT_ID",
+  "guildId": "YOUR_DISCORD_SERVER_ID",
+
+  "singleTenant": true,
+  "licensingEnabled": false,
+  "hostedEnforcementEnabled": false,
+  "rateLimitEnabled": true,
+
+  "database": {
+    "type": "dynamodb-local",
+    "persistPath": "./data/dynamo"
+  },
+
+  "storage": {
+    "type": "disabled"
+  },
+
+  "posthogEnabled": false,
+  "posthogKey": null,
+
+  "instatusHeartbeatUrl": null
+}

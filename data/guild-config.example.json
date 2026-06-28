@@ -2,6 +2,7 @@
   "serverId": "000000000000000000",
   "access": {
     "supervisorRoleID": "000000000000000000",
+    "adminRoleID": null,
     "supportMemberRoleID": null,
     "blacklistRoleID": "000000000000000000",
     "priorityRoles": [],

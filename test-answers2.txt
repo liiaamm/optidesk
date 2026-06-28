@@ -1,0 +1,11 @@
+mock-bot-token
+mock-client-id
+mock-guild-id
+y
+n
+n
+y
+sqlite
+./data/optidesk.db
+disabled
+n

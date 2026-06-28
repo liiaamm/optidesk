@@ -25,6 +25,7 @@ const deleteMsgTicket         = require('./deleteMsgTicket');
 const buttonCategoryHandler   = require('./operations/buttonCategoryHandler');
 const staffPanelTicket        = require('./actions/staffPanelTicket');
 const blacklistTicket         = require('./actions/blacklistTicket');
+const configUI                = require('./operations/configUI');
 const {logEvent} = require("../utils/logging");
 const {sanitizeReason} = require("../utils/security");
 
@@ -49,6 +50,7 @@ const buttonHandlers = {
     selectCategory: buttonCategoryHandler,
     staffPanelTicket,
     blacklistTicket,
+    ...configUI,
 };
 
 // --- Middleware ---
@@ -208,6 +210,9 @@ async function routeInteraction(interaction) {
         if (!handler && interaction.customId.startsWith('viewTranscript:')) {
             handler = buttonHandlers.viewTranscript;
         }
+        if (!handler && interaction.customId.startsWith('configToggleParam_')) {
+            handler = buttonHandlers.configToggleParam;
+        }
         if (handler) {
             try {
                 await handler(interaction);
@@ -222,6 +227,30 @@ async function routeInteraction(interaction) {
                 await handler(interaction);
             } catch (err) {
                 console.error(`Error handling select "${interaction.customId}":`, err);
+            }
+        }
+    } else if (interaction.isRoleSelectMenu()) {
+        let handler = buttonHandlers[interaction.customId];
+        if (!handler && interaction.customId.startsWith('configEditRole_')) {
+            handler = buttonHandlers.configEditRole;
+        }
+        if (handler) {
+            try {
+                await handler(interaction);
+            } catch (err) {
+                console.error(`Error handling role select "${interaction.customId}":`, err);
+            }
+        }
+    } else if (interaction.isChannelSelectMenu()) {
+        let handler = buttonHandlers[interaction.customId];
+        if (!handler && interaction.customId.startsWith('configEditChannel_')) {
+            handler = buttonHandlers.configEditChannel;
+        }
+        if (handler) {
+            try {
+                await handler(interaction);
+            } catch (err) {
+                console.error(`Error handling channel select "${interaction.customId}":`, err);
             }
         }
     }

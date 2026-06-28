@@ -179,52 +179,11 @@ async function main() {
 
     guildConfig.serverId = guildId;
 
-    if (!guildConfig.access) guildConfig.access = {};
-    guildConfig.access.supervisorRoleID = await askQuestion('Staff/Supervisor Role ID (authorized to manage all tickets)', { required: true });
-    
-    const supportMemberRoleId = await askQuestion('Support Member Role ID (optional role for regular support staff, leave blank for none)', { defaultValue: '' });
-    guildConfig.access.supportMemberRoleID = supportMemberRoleId || null;
-    
-    guildConfig.access.blacklistRoleID = await askQuestion('Blacklist Role ID (users with this role will be blocked from opening tickets)', { required: true });
-
-    // Set up default ticket category (usually 'General Support' in the example)
-    if (!guildConfig.layout) guildConfig.layout = {};
-    if (!guildConfig.layout.categories) guildConfig.layout.categories = {};
-    
-    const defaultCatName = "General Support";
-    console.log(`\nLet's configure the default ticket category: "${defaultCatName}"`);
-    
-    if (!guildConfig.layout.categories[defaultCatName]) {
-        guildConfig.layout.categories[defaultCatName] = {
-            anonymous: false,
-            description: "General help and questions.",
-            emoji: "💬",
-            supervisorRoleId: null,
-            requiredRoleId: null
-        };
-    }
-    
-    guildConfig.layout.categories[defaultCatName].channelId = await askQuestion(`Parent channel ID where "${defaultCatName}" ticket threads will be created`, { required: true });
-    guildConfig.layout.categories[defaultCatName].inboxId = await askQuestion(`Staff Inbox channel ID where new ticket notifications are sent`, { required: true });
-    guildConfig.layout.categories[defaultCatName].staffRoleId = guildConfig.access.supervisorRoleID; // Default staff role to supervisor role
-
-    // Optional transcription channel
-    const transChannelId = await askQuestion('Transcript Channel ID (leave blank to disable transcripts storage in discord)', { defaultValue: '' });
-    guildConfig.layout.transcriptChannelId = transChannelId || null;
-    if (guildConfig.settings) {
-        guildConfig.settings.transcriptsEnabled = !!transChannelId;
-    }
-
-    // Optional logging channel
-    const logChannelId = await askQuestion('Logging Channel ID (leave blank to disable logs)', { defaultValue: '' });
-    guildConfig.layout.loggingChannelId = logChannelId || null;
-    if (guildConfig.settings) {
-        guildConfig.settings.loggingEnabled = !!logChannelId;
-    }
-
+    // We now rely on the /config Discord command for all guild-level settings.
+    // We just write the template to disk so the bot can boot and accept /config commands.
     const guildConfigPath = path.join(__dirname, '..', 'data', 'guild-config.json');
     fs.writeFileSync(guildConfigPath, JSON.stringify(guildConfig, null, 2));
-    console.log(`\n✅ Saved guild configuration to ${guildConfigPath}\n`);
+    console.log(`\n✅ Saved default guild configuration template to ${guildConfigPath}\n`);
 
     // --- PM2 ECOSYSTEM.CONFIG.JS ---
     console.log('--- Phase 3: Generating PM2 Ecosystem File ---\n');

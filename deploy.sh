@@ -31,10 +31,10 @@ if [ "$IS_IN_REPO" = false ]; then
     
     cd optidesk
     # Execute the script from the cloned repository context
-    if [ -f "scripts/deploy.sh" ]; then
-        exec bash scripts/deploy.sh "$@"
+    if [ -f "deploy.sh" ]; then
+        exec bash deploy.sh "$@"
     else
-        echo "❌ Error: Cloned repository does not contain scripts/deploy.sh."
+        echo "❌ Error: Cloned repository does not contain deploy.sh."
         exit 1
     fi
 fi

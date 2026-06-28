@@ -20,7 +20,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "supervisorRoleID",
+        "supportMemberRoleID",
         "blacklistRoleID",
         "priorityRoles",
         "pingOnPriorityRoles"
@@ -35,7 +35,7 @@
           "description": "Global administrator role. Members with this role can configure the bot."
         },
         "supportMemberRoleID": {
-          "$ref": "#/definitions/nullableDiscordSnowflake",
+          "$ref": "#/definitions/discordSnowflake",
           "description": "Role considered staff when settings.addNonStaffToTickets is false."
         },
         "blacklistRoleID": {

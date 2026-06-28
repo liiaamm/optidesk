@@ -1,9 +1,9 @@
 {
   "serverId": "000000000000000000",
   "access": {
-    "supervisorRoleID": "000000000000000000",
+    "supervisorRoleID": null,
     "adminRoleID": null,
-    "supportMemberRoleID": null,
+    "supportMemberRoleID": "000000000000000000",
     "blacklistRoleID": "000000000000000000",
     "priorityRoles": [],
     "pingOnPriorityRoles": []

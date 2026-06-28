@@ -117,6 +117,26 @@ else
     echo ""
 fi
 
+# 5.5. Emojis Deployment
+echo "========================================="
+echo "   Deploying OptiDesk Emojis...         "
+echo "========================================="
+set +e
+npm run emojis
+EMOJI_STATUS=$?
+set -e
+
+if [ $EMOJI_STATUS -ne 0 ]; then
+    echo ""
+    echo "⚠️ Warning: Failed to sync emojis with Discord."
+    echo "This is expected if your Discord Bot Token or Client ID is invalid or missing permissions."
+    echo ""
+else
+    echo "✅ Emojis deployed to Discord successfully."
+    echo ""
+fi
+
+
 # 6. PM2 Startup and boot management
 echo "========================================="
 echo "   Starting Bot and PM2 Setup...        "

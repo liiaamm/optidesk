@@ -38,6 +38,7 @@ test('schema accepts a prod-shaped guild config with categories, intellitags, an
             pingOnPriorityRoles: ['1425012111053951038'],
             priorityRoles: ['1489841304765468783'],
             supervisorRoleID: null,
+            supportMemberRoleID: '1425012011967975548',
         },
         appearance: {
             defaultHexColor: '9DE8E4',

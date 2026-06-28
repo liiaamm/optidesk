@@ -73,8 +73,8 @@ async function main() {
     console.log('OptiDesk supports multiple database engines:');
     console.log('  1. sqlite   - (Recommended) Zero-config local database, extremely fast and reliable.');
     console.log('  2. postgres - Global/Production distributed PostgreSQL database.');
-    console.log('  3. local    - Legacy DynamoDB local deployment.');
-    console.log('  4. aws      - Legacy DynamoDB AWS deployment.');
+    console.log('  3. local    - DynamoDB local deployment.');
+    console.log('  4. aws      - DynamoDB AWS deployment.');
     const dbTypeInput = await askQuestion('Database Engine (sqlite/postgres/local/aws)', { defaultValue: 'sqlite' });
     
     let dbType = 'sqlite';

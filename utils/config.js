@@ -3,7 +3,7 @@
 // Config loader. The active *profile* is chosen by launch flag / environment:
 //
 //   - (default, no flag):              ../config.json    — self-hosted / local
-//   - --cloud  OR NODE_ENV=production: SSM /optidesk/prod/*  — cloud (AWS + S3 + PostHog)
+//   - --cloud:                         SSM /optidesk/prod/*  — cloud (AWS + S3 + PostHog)
 //   - --dev / --dev=config:            ../config.json    — contributor dev
 //   - --dev=ssm:                       SSM /optidesk/dev/* (+ shared prod posthogKey)
 
@@ -11,7 +11,7 @@ const _devArg   = process.argv.find(a => a === '--dev' || a.startsWith('--dev=')
 const _cloudArg = process.argv.includes('--cloud');
 
 const IS_DEV      = !!_devArg;
-const IS_CLOUD    = !IS_DEV && (_cloudArg || process.env.NODE_ENV === 'production');
+const IS_CLOUD    = !IS_DEV && _cloudArg;
 const IS_SELFHOST = !IS_DEV && !IS_CLOUD;
 // Back-compat alias — historically `IS_PROD` meant "the cloud/production profile".
 const IS_PROD     = IS_CLOUD;

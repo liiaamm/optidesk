@@ -9,3 +9,4 @@ optidesk.ps1
 \#*\#
 scripts/send-flag-preview.js
 emoji-packs/
+.DS_Store

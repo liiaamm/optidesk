@@ -41,7 +41,7 @@ OptiDesk is incredibly simple to set up! We provide a cross-platform (Linux/macO
 
 **Just run this command in your terminal:**
 ```bash
-curl -sL https://raw.githubusercontent.com/atriasfty/optidesk/main/deploy.sh | bash
+curl -sL https://raw.githubusercontent.com/liiaamm/optidesk/main/deploy.sh | bash
 ```
 
 Once the script finishes, check Discord! Your bot should be online.

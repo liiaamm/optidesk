@@ -140,7 +140,19 @@ class SqlDocumentClient {
                         const removePart = parts[1] || (params.UpdateExpression.startsWith('REMOVE ') ? params.UpdateExpression.substring(7) : '');
 
                         if (setPart) {
-                            const regex = /([\w#]+)\s*=\s*(if_not_exists\([^)]+\)\s*\+\s*[\w:]+|[^,]+)/g;
+                            const setNested = (obj, path, value) => {
+                                const keys = path.split('.');
+                                let cur = obj;
+                                for (let i = 0; i < keys.length - 1; i++) {
+                                    if (!cur[keys[i]]) cur[keys[i]] = {};
+                                    cur = cur[keys[i]];
+                                }
+                                cur[keys[keys.length - 1]] = value;
+                            };
+                            const getNested = (obj, path) => {
+                                return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+                            };
+                            const regex = /([\w#.]+)\s*=\s*(if_not_exists\([^)]+\)\s*\+\s*[\w:]+|[^,]+)/g;
                             let match;
                             while ((match = regex.exec(setPart)) !== null) {
                                 const fieldFull = match[1];
@@ -154,21 +166,30 @@ class SqlDocumentClient {
                                         const prop = (params.ExpressionAttributeNames && propFull.startsWith('#')) ? params.ExpressionAttributeNames[propFull] : propFull;
                                         const zeroVal = params.ExpressionAttributeValues[zeroValKey];
                                         const incVal = params.ExpressionAttributeValues[incValKey];
-                                        const current = data[prop] !== undefined ? data[prop] : zeroVal;
-                                        data[field] = current + incVal;
+                                        const current = getNested(data, prop) !== undefined ? getNested(data, prop) : zeroVal;
+                                        setNested(data, field, current + incVal);
                                     } else {
-                                        data[field] = params.ExpressionAttributeValues[expr];
+                                        setNested(data, field, params.ExpressionAttributeValues[expr]);
                                     }
                                 } else {
-                                    data[field] = params.ExpressionAttributeValues[expr];
+                                    setNested(data, field, params.ExpressionAttributeValues[expr]);
                                 }
                             }
                         }
                         if (removePart) {
+                            const deleteNested = (obj, path) => {
+                                const keys = path.split('.');
+                                let cur = obj;
+                                for (let i = 0; i < keys.length - 1; i++) {
+                                    if (!cur[keys[i]]) return;
+                                    cur = cur[keys[i]];
+                                }
+                                delete cur[keys[keys.length - 1]];
+                            };
                             const fields = removePart.split(',').map(s => s.trim());
                             for (const f of fields) {
                                 const actualF = (params.ExpressionAttributeNames && f.startsWith('#')) ? params.ExpressionAttributeNames[f] : f;
-                                delete data[actualF];
+                                deleteNested(data, actualF);
                             }
                         }
                     }

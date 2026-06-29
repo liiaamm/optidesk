@@ -1,6 +1,6 @@
 <!-- You must be really lost if you're here... -->
 <h1 align="left">
-  <img src="./assets/optidesk.png" alt="The OptiDesk wordmark." width="200px" height="50px">
+  <img src="./assets/optidesk.png" alt="OptiDesk" width="200px" height="50px">
 </h1>
 <h4>Enterprise-grade Discord ticketing that just works (and looks good!)</h4>
 

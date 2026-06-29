@@ -110,7 +110,17 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
     When prompted, select `3` - you are using the local, config.json for your secrets in this path.
 
-6. **Run the bot**
+6. **Upload emojis**
+
+   Upload the emojis required for OptiDesk to work. You can change the colour of almost all of them. Use the following command.
+
+   ```bash
+   npm run emojis -- --color "#9DE8E4" --upload --prefix local_ --set SelfHostEmojis
+   ```
+
+   Replace the hex, prefix (as shown in the emoji name) and set name as needed. Then, paste the block provided into `utils/emojis.js` and include the set name in the `module.exports = {YOURSETNAME}` variable. We're working on making this smoother.
+
+7. **Run the bot**
 
     Run the bot by using node.
 
@@ -120,7 +130,7 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
     We highly recommend using something like [PM2](https://pm2.keymetrics.io/) so an accidental shutoff or error doesn't stop your instance.
 
-7. Optional: **Configure Transcription**
+8. Optional: **Configure Transcription**
 
     Transcription relies on AWS S3. To enable Transcription, you need an S3 bucket and AWS credentials on the machine. To enable it, change the following in `config.json`:
 

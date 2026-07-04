@@ -4,8 +4,8 @@
  *
  * The script renders every Material Symbols icon referenced in utils/emojis.js
  * in a chosen colour, copies bundled system emojis into the pack, optionally
- * uploads all of them as Discord application emojis, and prints a ready-to-paste
- * utils/emojis.js set block.
+ * uploads all of them as Discord application emojis, updates utils/emojis.js,
+ * and prints the generated set block.
  *
  * Usage:
  *   npm run emojis -- --color "#9DE8E4" --out ./emoji-packs/local
@@ -334,7 +334,7 @@ function relativeToPack(args, filePath) {
     return path.relative(args.dir, filePath).replace(/\\/g, '/');
 }
 
-function buildEmojisJsBlock(results, args) {
+function buildEmojisJsSetDefinition(results, args) {
     const lines = [`const ${args.setName} = {`];
     for (const result of results) {
         const comment = result.source === 'material'
@@ -346,6 +346,11 @@ function buildEmojisJsBlock(results, args) {
         lines.push('    },');
     }
     lines.push('};');
+    return lines.join('\n');
+}
+
+function buildEmojisJsBlock(results, args) {
+    const lines = [buildEmojisJsSetDefinition(results, args)];
     lines.push('');
     lines.push('module.exports = {');
     if (args.setName !== 'OptiDeskEmojis') {
@@ -354,6 +359,51 @@ function buildEmojisJsBlock(results, args) {
     lines.push(`    ${args.setName},`);
     lines.push('};');
     return lines.join('\n');
+}
+
+function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function ensureSetExported(source, setName) {
+    const exportRe = /module\.exports\s*=\s*\{([\s\S]*?)\};/m;
+    const match = source.match(exportRe);
+    if (!match) {
+        return `${source.trimEnd()}\n\nmodule.exports = {\n    OptiDeskEmojis,\n    ${setName},\n};\n`;
+    }
+
+    const body = match[1];
+    const exported = new Set([...body.matchAll(/\b([A-Za-z_$][A-Za-z0-9_$]*)\b/g)].map(m => m[1]));
+    if (exported.has(setName)) return source;
+
+    return source.replace(exportRe, `module.exports = {${body.trimEnd()}\n    ${setName},\n};`);
+}
+
+function updateEmojisJs(results, args) {
+    const start = `// BEGIN GENERATED EMOJI SET: ${args.setName}`;
+    const end = `// END GENERATED EMOJI SET: ${args.setName}`;
+    const generated = `${start}\n${buildEmojisJsSetDefinition(results, args)}\n${end}`;
+
+    let source = fs.readFileSync(EMOJIS_JS_PATH, 'utf8');
+    const existingGeneratedRe = new RegExp(`${escapeRegExp(start)}[\\s\\S]*?${escapeRegExp(end)}`);
+    if (existingGeneratedRe.test(source)) {
+        source = source.replace(existingGeneratedRe, generated);
+    } else {
+        const exportRe = /\nmodule\.exports\s*=\s*\{[\s\S]*?\};\s*$/;
+        const match = source.match(exportRe);
+        if (match) {
+            source = `${source.slice(0, match.index)}\n\n${generated}${source.slice(match.index)}`;
+        } else {
+            source = `${source.trimEnd()}\n\n${generated}\n`;
+        }
+    }
+
+    if (args.setName !== 'OptiDeskEmojis') {
+        source = ensureSetExported(source, args.setName);
+    }
+
+    fs.writeFileSync(EMOJIS_JS_PATH, source.endsWith('\n') ? source : `${source}\n`);
+    console.log(`Updated utils/emojis.js with ${args.setName}.`);
 }
 
 function writePackManifest(entries, uploadResults, args) {
@@ -386,6 +436,7 @@ function printUploadOutput(results, args, expectedEntries) {
     const block = buildEmojisJsBlock(results, args);
     const snippetPath = path.join(args.dir, `${args.setName}.emojis.js`);
     fs.writeFileSync(snippetPath, `${block}\n`);
+    updateEmojisJs(results, args);
 
     console.log(`Wrote utils/emojis.js snippet: ${path.relative(process.cwd(), snippetPath)}`);
     console.log('\n// --- utils/emojis.js set block ---\n');

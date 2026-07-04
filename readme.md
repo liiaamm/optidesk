@@ -14,17 +14,19 @@
 **OptiDesk** is a versatile Discord-based ticketing and request management bot that helps you manage, organise and process tickets in your server, with customisability and reliability at its core. Unlike other solutions, OptiDesk includes features such as Intellitag (deterministic keyword matching to help resolve requests or get required details for staff), Flagging (CX warnings, Priority Roles) and other intelligent features to get your staff on the ground running.
 
 ## Architecture
-**OptiDesk** is event-driven and relies on the Discord gateway through [`discord.js`](https://discord.js.org/) for communication, then validates and forwards requests through `events/interactionCreate.js`. Data is, by default, stored locally and configuration files are derived from `config.json` and `data/guild-config.json`.
+**OptiDesk** is event-driven and relies on the Discord gateway through [`discord.js`](https://discord.js.org/) for communication, then validates and forwards requests through `events/interactionCreate.js`. 
 
-### Cloud-Backed
-**OptiDesk** can additionally be used with fully cloud-backed infrastructure to minimise downtime, analyse how users use your instance, and triage incidents before your customers notice your instance is having issues. We do ***not*** recommend this for people who are unfamiliar with cloud infrastructure, although this is how OptiDesk is intended to be used. OptiDesk enforces the use of the following in `--cloud` mode:
-- [AWS DynamoDB](https://aws.amazon.com/dynamodb/) for all tables, [S3](https://aws.amazon.com/s3/) for transcript storage, [SSM Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) for credentials management (no more `config.json`)
+OptiDesk supports multiple database engines:
+- **AWS DynamoDB:** (Default) The only production-tested engine. Local deployment via `dynamodb-local` out of the box; cloud-native NoSQL when using `--cloud` mode for high-availability enterprise use.
+- **SQLite / PostgreSQL:** ⚠️ **EXPERIMENTAL — not production-tested.** These exist for contributors and the curious, not for anything you care about staying up. No migration path, no operational hardening, and edge cases in the DynamoDB-compatibility shim (`utils/sqlDocumentClient.js`) may still be lurking. Activating them requires typing a confirmation phrase in the setup wizard on purpose — that is not a bug. If you don't already know why you'd want SQL over DynamoDB, you don't want it. Do not use these for a server that matters. Issues filed against SQL backends are lower priority than DynamoDB issues.
 
-and OptiDesk strongly encourages the use of the following in `--cloud` mode:
-- [PostHog](https://posthog.com/) for analytics. We highly recommend enabling this for any serious deployment & piping `critical_failure` events into [PagerDuty](https://www.pagerduty.com/) or another service using PostHog's [Event Destinations](https://posthog.com/docs/cdp) feature.
+### Cloud-Backed & Integrations
+OptiDesk strongly encourages the use of the following integrations:
+- [PostHog](https://posthog.com/) for analytics and error tracking.
 - [Instatus](https://instatus.com/) for uptime monitoring.
+- [AWS S3](https://aws.amazon.com/s3/) for unlimited transcript storage.
 
-If you want to use PostHog or Instatus on the default operating mode (local), set the variables.
+In `--cloud` mode, OptiDesk uses [SSM Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) for credentials management instead of `.env` or `config.json`.
 
 ## Installation
 You'll need to decide which profile to use:
@@ -38,12 +40,22 @@ You'll need to decide which profile to use:
 
 There is also a `--dev` profile that will rely on either the `config.json` or SSM and keep the database in memory for testing, but it **should not be used on any deployment** as **the database is IN MEMORY**. No instructions will be provided on how to use this.
 
+### Automated Installation/Script
+
+We recommend using the automated deployment script so you don't have to go through manual setup. The script will ask you a few questions on how you want your OptiDesk instance to be configured, then configure PM2 for you! The script is compatible with most MacOS/Linux distributions, and can be run by running the following commands on the target machine:
+```bash
+git clone https://github.com/liiaamm/optidesk.git
+cd optidesk
+./deploy.sh
+```
+The script pauses for you to review `data/guild-config.json` and replace Discord channel and role placeholders before it starts the bot.
+
 ### Local Installation
 Sidenote: the commands assume a bash shell. If you're running this somewhere else, you'll likely need to change certain commands.
 1. **Install dependencies**
 
     OptiDesk requires the following:
-      - [Node.js 18+](https://nodejs.org/en/download)
+      - [Node.js 20+](https://nodejs.org/en/download)
       - A [Discord application](https://discord.com/developers/applications) & bot token
 
     *external links are not verified by OptiDesk, use at own risk*
@@ -82,6 +94,8 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
     If you haven't already, also **add the bot to your server** with the `Administrator` permission. It's not strictly required however - select best-fit permissions.
 
+    You must also enable the **Server Members Intent** and **Message Content Intent** under your application's **Bot** settings on the Discord Developers website.
+
 4. **Configure OptiDesk**
 
     Switch your working directory to `./data`, then copy `guild-config.example.json` and rename it to `guild-config.json`.
@@ -98,7 +112,7 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
     `staffRoleId` - Your staff role - who should be able to access and manage tickets.
 
-    That is the **minimum** required. OptiDesk can handle a significant magnitude more - tinker with the settings! To change the guild configuration later, change `data/guild-config.json` and restart the bot. In local single-tenant mode, OptiDesk syncs that file into the guild configuration record on startup without touching ticket data.
+    That is the **minimum** required. If you set `settings.addNonStaffToTickets` to `false`, only members with staff access to the ticket's category (its `staffRoleId`, its `supervisorRoleId`, or the global `supervisorRoleID`) can be added to tickets. OptiDesk can handle a significant magnitude more - tinker with the settings! To change the guild configuration later, change `data/guild-config.json` and restart the bot. In local single-tenant mode, OptiDesk syncs that file into the guild configuration record on startup without touching ticket data.
 
 5. **Register commands**
 
@@ -118,7 +132,7 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
    npm run emojis -- --color "#9DE8E4" --upload --prefix local_ --set SelfHostEmojis
    ```
 
-   Replace the hex, prefix (as shown in the emoji name) and set name as needed. Then, paste the block provided into `utils/emojis.js` and include the set name in the `module.exports = {YOURSETNAME}` variable. We're working on making this smoother.
+   Replace the hex, prefix (as shown in the emoji name) and set name as needed. The script updates `utils/emojis.js` with the uploaded emoji IDs. Then set `appearance.emojiSet` in `data/guild-config.json` to the set name you used.
 
 7. **Run the bot**
 
@@ -153,17 +167,12 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
 OptiDesk **requires** at minimum, 6 **DynamoDB** tables configured, with the names substituted inside `utils/constants.js`. You don't need to configure `OptiDeskPerformance` if you don't need to.
 
-OptiDesk additionally **requires** credentials configured in SSM:
+Cloud mode reads credentials from SSM Parameter Store and does not use `config.json`. OptiDesk additionally **requires** the following SSM parameters:
 
 ```
 /optidesk/prod/token
 /optidesk/prod/clientId
 /optidesk/prod/guildId
-```
-
-and optionally:
-```
-/optidesk/prod/hosting
 /optidesk/prod/instatusHeartbeatUrl
 /optidesk/prod/posthogKey
 ```
@@ -186,10 +195,8 @@ Contributions are welcome: please see `CONTRIBUTING.md`, `CODEOFCONDUCT.md`, and
 
 ### Suggestions & Reports
 
-
 > [!CAUTION]
 > ***DO NOT REPORT VULNERABILITIES THROUGH ANY PUBLIC CHANNEL, INCLUDING GITHUB ISSUES. PLEASE SEE `SECURITY.md`***
-
 
 Please use [GitHub Issues](https://github.com/liiaamm/optidesk/issues) for any suggestions or bug reports. Use the correct tag, please, and provide as much detail as possible.
 

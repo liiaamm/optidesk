@@ -39,6 +39,13 @@ async function main() {
 			if (cfg.database.type === 'dynamodb-local') {
 				const { startLocalDynamo } = require('./utils/localDynamo');
 				await startLocalDynamo(cfg);
+			} else if (cfg.database.type === 'sqlite' || cfg.database.type === 'postgresql') {
+				const { dynamo } = require('./utils/db');
+				const { syncSingleTenantGuildConfig } = require('./utils/localGuildConfigSeed');
+				const result = await syncSingleTenantGuildConfig(dynamo, cfg);
+				if (result.status === 'synced') {
+					console.log(`\n[database] synced starter guild config for ${result.guildId} from ${result.sourceName}.`);
+				}
 			}
 		}]);
 	}

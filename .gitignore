@@ -1,7 +1,9 @@
 node_modules
 config.json
+ecosystem.config.js
 data/guild-config.json
 data/dynamo/
+data/*.db
 backendutils/
 optidesk-runner.js
 optidesk.exe
@@ -9,3 +11,5 @@ optidesk.ps1
 \#*\#
 scripts/send-flag-preview.js
 emoji-packs/
+.DS_Store
+/coverage

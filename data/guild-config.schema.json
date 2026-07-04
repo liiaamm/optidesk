@@ -32,7 +32,7 @@
         },
         "supportMemberRoleID": {
           "$ref": "#/definitions/nullableDiscordSnowflake",
-          "description": "Role considered staff when settings.addNonStaffToTickets is false."
+          "description": "Deprecated: staff checks for settings.addNonStaffToTickets now use the category's staffRoleId (and supervisor roles). Retained so existing configs stay valid."
         },
         "blacklistRoleID": {
           "$ref": "#/definitions/nullableDiscordSnowflake",
@@ -169,7 +169,7 @@
         },
         "addNonStaffToTickets": {
           "type": "boolean",
-          "description": "When false, the Add action only permits members with access.supportMemberRoleID."
+          "description": "When false, the Add action only permits members with staff access to the ticket's category (the category's staffRoleId, its supervisorRoleId, the global supervisorRoleID, or the guild owner)."
         }
       }
     }

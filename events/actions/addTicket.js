@@ -4,6 +4,7 @@ const { getGuildConfig } = require("../../utils/guildConfig");
 const { getTicketByChannel } = require('../../utils/db');
 const { safeReply } = require('../../utils/interactionHelper');
 const { checkStaffAccess, sanitizeReason} = require('../../utils/security');
+const { memberHasCategoryAccess } = require('../../utils/categoryAcl');
 const { logEvent } = require('../../utils/logging');
 
 const funnyResponses = [
@@ -97,7 +98,7 @@ module.exports = async function addTicket(interaction) {
                     message: err?.message,
                 });
             }
-            if (!targetMember?.roles.cache.has(config.access.supportMemberRoleID)) {
+            if (!memberHasCategoryAccess(targetMember, config, record.category)) {
                 await i.reply({ content: `This server prohibits adding non-staff members to tickets. Please contact server management.`, flags: MessageFlags.Ephemeral });
                 return;
             }

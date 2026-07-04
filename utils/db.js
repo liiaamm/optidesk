@@ -44,17 +44,22 @@ let _dynamo = null;
 function ensureDynamo() {
     if (!_dynamo) {
         const database = safeConfig()?.database ?? { type: 'dynamodb-aws', region: DEFAULT_REGION };
-        const opts = {
-            region: database.region || DEFAULT_REGION,
-            httpOptions: { agent: keepAliveHttpsAgent },
-        };
-        if (database.type === 'dynamodb-local') {
-            opts.endpoint        = database.endpoint || 'http://localhost:8000';
-            opts.accessKeyId     = 'local';
-            opts.secretAccessKey = 'local';
-            opts.httpOptions     = { agent: keepAliveHttpAgent };
+        if (database.type === 'postgresql' || database.type === 'sqlite') {
+            const SqlDocumentClient = require('./sqlDocumentClient');
+            _dynamo = new SqlDocumentClient(database);
+        } else {
+            const opts = {
+                region: database.region || DEFAULT_REGION,
+                httpOptions: { agent: keepAliveHttpsAgent },
+            };
+            if (database.type === 'dynamodb-local') {
+                opts.endpoint        = database.endpoint || 'http://localhost:8000';
+                opts.accessKeyId     = 'local';
+                opts.secretAccessKey = 'local';
+                opts.httpOptions     = { agent: keepAliveHttpAgent };
+            }
+            _dynamo = new AWS.DynamoDB.DocumentClient(opts);
         }
-        _dynamo = new AWS.DynamoDB.DocumentClient(opts);
     }
     return _dynamo;
 }

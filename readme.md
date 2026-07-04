@@ -18,7 +18,7 @@
 
 OptiDesk supports multiple database engines:
 - **AWS DynamoDB:** (Default) The only production-tested engine. Local deployment via `dynamodb-local` out of the box; cloud-native NoSQL when using `--cloud` mode for high-availability enterprise use.
-- **SQLite / PostgreSQL:** ⚠️ **EXPERIMENTAL — not production-tested.** These exist for contributors and the curious, not for anything you care about staying up. No migration path, no operational hardening, and edge cases in the DynamoDB-compatibility shim (`utils/sqlDocumentClient.js`) may still be lurking. Activating them requires typing a confirmation phrase in the setup wizard on purpose — that is not a bug. If you don't already know why you'd want SQL over DynamoDB, you don't want it. Do not use these for a server that matters. Issues filed against SQL backends are lower priority than DynamoDB issues.
+- **SQLite / PostgreSQL:** ⚠️ **EXPERIMENTAL - not production-tested.** These exist for contributors and the curious, not for anything you care about staying up. Not suitable for production use. Best-effort compatability provided, but not guaranteed.
 
 ### Cloud-Backed & Integrations
 OptiDesk strongly encourages the use of the following integrations:

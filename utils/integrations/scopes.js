@@ -1,5 +1,5 @@
 // API Version: 1
-const VALID_SCOPES = ["events.subscribe", "instance.info", "ticket.created"];
+const VALID_SCOPES = ["events.subscribe", "instance.info"];
 
 // No remote network-accessible scopes
 // Should probably not increase this

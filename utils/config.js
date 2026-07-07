@@ -39,6 +39,7 @@ function profileDefaults(profile) {
             hostedEnforcementEnabled: true,
             rateLimitEnabled: true,
             singleTenant:     false,
+            integrationsEnabled: false,
         };
     }
 
@@ -60,6 +61,7 @@ function profileDefaults(profile) {
         hostedEnforcementEnabled: dev,
         rateLimitEnabled: true,
         singleTenant:     !dev,
+        integrationsEnabled: false,
     };
 }
 
@@ -81,6 +83,7 @@ function normalizeConfig(raw, profile) {
         hostedEnforcementEnabled: raw.hostedEnforcementEnabled ?? d.hostedEnforcementEnabled,
         rateLimitEnabled: raw.rateLimitEnabled ?? d.rateLimitEnabled,
         singleTenant:     raw.singleTenant     ?? d.singleTenant,
+        integrationsEnabled: raw.integrationsEnabled ?? d.integrationsEnabled,
     };
 }
 

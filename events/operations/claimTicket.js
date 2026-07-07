@@ -6,6 +6,7 @@ const { loadEmojis } = require('../../utils/emojiLoader');
 const { safeReply } = require('../../utils/interactionHelper');
 const { checkStaffAccess, sanitizeReason} = require('../../utils/security');
 const {logEvent} = require("../../utils/logging");
+const bus = require('../../utils/integrations/bus');
 
 module.exports = async function claimTicket(interaction) {
     const config = await getGuildConfig(interaction.guild.id);
@@ -144,6 +145,13 @@ module.exports = async function claimTicket(interaction) {
             flags: MessageFlags.Ephemeral,
             content: `${emojis.check.markdown} You've claimed the support request for ${record.ticketCreator}.`
         })
+
+        bus.emit('ticket.claimed', {
+            ticketId: record.channelId,
+            guildId: interaction.guild.id,
+            claimedBy: interaction.user.id,
+            category: record.category,
+        });
 
         await logEvent("ticketActions", "info", `**${sanitizeReason(interaction.user.tag)}** claimed the following ticket:\n> -# Ticket ID: ${record.channelId}\n> Ticket Creator: **${sanitizeReason(record.ticketCreator)}**`, interaction)
     } else {

@@ -48,14 +48,21 @@ async function cmdRegister(name) {
         return;
     }
 
-    if (requiresToken(scopes)) {
+    const existing = getEntry(name);
+    const config = existing?.config ?? {};
+
+    if (!requiresToken(scopes)) {
+        setEntry(name, { enabled: true, scopes, config });
+        console.log(`Registered ${name}.`);
+    } else if (existing?.tokenHash) {
+        // Re-registering (e.g. after a manual `git pull`) must not rotate a live token.
+        setEntry(name, { ...existing, enabled: true, scopes, config });
+        console.log(`Registered ${name}. Existing token kept — use "rotate-token" to invalidate it.`);
+    } else {
         const { token, tokenHash } = generateToken();
-        setEntry(name, { enabled: true, scopes, tokenHash, config: {} });
+        setEntry(name, { enabled: true, scopes, tokenHash, config });
         console.log(`Registered ${name}.`);
         console.log(`Token (shown once): ${token}`);
-    } else {
-        setEntry(name, { enabled: true, scopes, config: {} });
-        console.log(`Registered ${name}.`);
     }
 }
 
@@ -76,7 +83,7 @@ async function cmdDisable(name) {
 async function cmdRemove(name) {
     if (!getEntry(name)) throw new Error(`${name} is not registered`);
     removeEntry(name);
-    console.log(`${name} removed from the registry (its token is now invalid). The folder in integrations/ was left untouched.`);
+    console.log(`${name} removed from the registry. The folder in integrations/ was left untouched.`);
 }
 
 async function cmdRotateToken(name) {

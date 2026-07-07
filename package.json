@@ -22,6 +22,7 @@
     "start": "node .",
     "commands": "node deploy-commands.js",
     "emojis": "node scripts/download-emoji-pack.js",
+    "integrations": "node scripts/integrations.js",
     "test": "jest",
     "lint": "eslint . --ext .js"
   },

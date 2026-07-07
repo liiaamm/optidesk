@@ -9,6 +9,7 @@ const { safeReply } = require('../utils/interactionHelper');
 const { sanitizeReason } = require('../utils/security');
 const queueTicket = require('../events/operations/queueTicket');
 const {logEvent} = require("../utils/logging");
+const bus = require('../utils/integrations/bus');
 
 async function openTicket(interaction, category, reason) {
     // Init guild
@@ -273,6 +274,13 @@ async function openTicket(interaction, category, reason) {
         };
 
         await dynamo.put(params).promise();
+
+        bus.emit('ticket.created', {
+            ticketId: ticket.id,
+            guildId: interaction.guild.id,
+            userId: interaction.user.id,
+            category,
+        });
 
     } catch (error) {
         console.log('[EMERGENCY] TICKET RECORD CREATION FAILED!');

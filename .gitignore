@@ -2,6 +2,7 @@ node_modules
 config.json
 ecosystem.config.js
 data/guild-config.json
+data/integrations.json
 data/dynamo/
 data/*.db
 backendutils/
@@ -13,3 +14,5 @@ scripts/send-flag-preview.js
 emoji-packs/
 .DS_Store
 /coverage
+integrations/*
+!integrations/README.md

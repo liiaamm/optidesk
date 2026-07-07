@@ -7,6 +7,7 @@
   "licensingEnabled": false,
   "hostedEnforcementEnabled": false,
   "rateLimitEnabled": true,
+  "integrationsEnabled": false,
 
   "database": {
     "type": "dynamodb-local",

@@ -10,6 +10,7 @@ const { Client, Collection, GatewayIntentBits, ActivityType, Events } = require(
 const { loadConfig, getConfig, IS_DEV, IS_CLOUD, DEV_SOURCE_FLAG } = require('./utils/config');
 const { clearGuildCache } = require('./utils/guildConfig');
 const { showBanner } = require('./utils/banner');
+const { loadIntegrations } = require('./utils/integrations/loader');
 
 async function main() {
 	let configPromise = null;
@@ -49,6 +50,11 @@ async function main() {
 			}
 		}]);
 	}
+
+	steps.push(['Loading integrations', async () => {
+		const cfg = await configPromise;
+		if (cfg.integrationsEnabled) await loadIntegrations();
+	}]);
 
 	steps.push(['Initializing client',          0]);
 	steps.push(['Loading commands',             0]);

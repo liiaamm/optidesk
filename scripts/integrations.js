@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const { VALID_SCOPES, requiresToken } = require('../utils/integrations/scopes');
+const { VALID_SCOPES, SCOPE_DESCRIPTIONS, requiresToken } = require('../utils/integrations/scopes');
 const { generateToken, getEntry, setEntry, removeEntry, generateRegistry } = require('../utils/integrations/registry');
 
 const INTEGRATIONS_ROOT = path.join(__dirname, '..', 'integrations');
@@ -37,7 +37,12 @@ async function cmdRegister(name) {
     const scopes = Array.isArray(manifest.scopes) ? manifest.scopes : [];
     const unknown = scopes.filter(s => !VALID_SCOPES.includes(s));
 
-    console.log(`${name} requests scopes: ${scopes.join(', ') || '(none)'}`);
+    console.log(`${name} requests the following scopes:`);
+    for (const scope of scopes) {
+        if (unknown.includes(scope)) continue;
+        console.log(`  ${scope}\n    ${SCOPE_DESCRIPTIONS[scope] ?? '(no description)'}`);
+    }
+    if (!scopes.length) console.log('  (none)');
     if (unknown.length) {
         console.warn(`Warning: unrecognized scope(s), ignoring: ${unknown.join(', ')}`);
     }

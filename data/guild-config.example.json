@@ -55,6 +55,7 @@
     "interactiveSupportEnabled": true,
     "transcriptsEnabled": false,
     "loggingEnabled": false,
-    "transcriptsTrusted": false
+    "transcriptsTrusted": false,
+    "integrationsEnabled": false
   }
 }

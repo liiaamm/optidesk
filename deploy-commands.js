@@ -61,7 +61,18 @@ for (const folder of commandFolders) {
 (async () => {
 	try {
 		const source = await pickSource();
-		const { clientId, token } = await loadConfig({ source });
+		const { clientId, token, integrationsEnabled } = await loadConfig({ source });
+		if (integrationsEnabled) {
+			const coreNames = new Set(commands.map(c => c.name));
+			const { collectIntegrationCommandData } = require('./utils/integrations/commands');
+			for (const json of collectIntegrationCommandData()) {
+				if (coreNames.has(json.name)) {
+					console.warn(`[integrations] command "/${json.name}" collides with a core command — skipping`);
+					continue;
+				}
+				commands.push(json);
+			}
+		}
 		const rest = new REST().setToken(token);
 
 		console.log(`Started refreshing ${commands.length} application (/) commands (source: ${source}).`);

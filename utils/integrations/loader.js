@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { getEntry } = require('./registry');
 const { buildContext } = require('./context');
+const { registerIntegrationCommands, validateCommandsPath } = require('./commands');
 const bus = require('./bus');
 const { getGuildConfig } = require('../guildConfig');
 
@@ -29,10 +30,12 @@ function readManifest(name) {
         throw new Error(`invalid entry path "${entry}"`);
     }
 
+    if (manifest.commands !== undefined) validateCommandsPath(manifest.commands);
+
     return { ...manifest, entry };
 }
 
-async function loadIntegrations() {
+async function loadIntegrations(getClient = () => null) {
     bus.setGuildGate(async (guildId) => {
         const config = await getGuildConfig(guildId);
         return !!config?.settings?.integrationsEnabled;
@@ -57,7 +60,7 @@ async function loadIntegrations() {
             // Cap
             const grantedScopes = (registryEntry.scopes ?? []).filter(s => manifest.scopes.includes(s));
 
-            const ctx = buildContext(name, grantedScopes, registryEntry);
+            const ctx = buildContext(name, grantedScopes, registryEntry, getClient);
             const modulePath = path.join(INTEGRATIONS_ROOT, name, manifest.entry);
             const mod = require(modulePath);
 
@@ -66,6 +69,17 @@ async function loadIntegrations() {
             }
 
             await mod.setup(ctx);
+
+            if (manifest.commands) {
+                if (grantedScopes.includes('commands.register')) {
+                    const defs = require(path.join(INTEGRATIONS_ROOT, name, manifest.commands));
+                    const accepted = registerIntegrationCommands(name, ctx, defs);
+                    if (accepted.length) console.log(`[integrations] ${name}: registered command(s): /${accepted.join(', /')}`);
+                } else {
+                    console.warn(`[integrations] ${name}: declares commands but wasn't granted "commands.register" — skipping them`);
+                }
+            }
+
             console.log(`[integrations] loaded ${name} — scopes: ${grantedScopes.join(', ') || '(none)'}`);
         } catch (err) {
             console.warn(`[integrations] failed to load ${name}: ${err.message}`);

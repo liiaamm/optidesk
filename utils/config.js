@@ -75,7 +75,7 @@ function normalizeConfig(raw, profile) {
         ...raw,
         mode:     d.mode,
         hosting:  raw.hosting ?? d.hosting,
-        database: { ...d.database, ...(raw.database || {}) },
+        database: profile === 'dev' ? d.database : { ...d.database, ...(raw.database || {}) },
         storage:  { ...d.storage,  ...(raw.storage  || {}) },
         posthogKey,
         posthogEnabled:   !!wantPosthog && !!posthogKey,
@@ -111,6 +111,7 @@ function validateLoadedConfig(config, source) {
 async function _loadProdSsm() {
     const AWS = require('aws-sdk');
     const ssm = new AWS.SSM({ region: DEFAULT_REGION });
+    const integrationsEnabledName = '/optidesk/prod/integrationsEnabled';
 
     const { Parameters, InvalidParameters } = await ssm.getParameters({
         Names: [
@@ -119,12 +120,14 @@ async function _loadProdSsm() {
             '/optidesk/prod/guildId',
             '/optidesk/prod/posthogKey',
             '/optidesk/prod/instatusHeartbeatUrl',
+            integrationsEnabledName,
         ],
         WithDecryption: true,
     }).promise();
 
-    if (InvalidParameters && InvalidParameters.length > 0) {
-        throw new Error(`Missing SSM parameters: ${InvalidParameters.join(', ')}`);
+    const missingRequired = (InvalidParameters ?? []).filter(name => name !== integrationsEnabledName);
+    if (missingRequired.length > 0) {
+        throw new Error(`Missing SSM parameters: ${missingRequired.join(', ')}`);
     }
 
     const p = Object.fromEntries(Parameters.map(param => [param.Name.split('/').pop(), param.Value]));
@@ -134,12 +137,14 @@ async function _loadProdSsm() {
         guildId:              p.guildId,
         posthogKey:           p.posthogKey,
         instatusHeartbeatUrl: p.instatusHeartbeatUrl,
+        integrationsEnabled: p.integrationsEnabled === 'true',
     };
 }
 
 async function _loadDevSsm() {
     const AWS = require('aws-sdk');
     const ssm = new AWS.SSM({ region: DEFAULT_REGION });
+    const integrationsEnabledName = '/optidesk/dev/integrationsEnabled';
 
     const { Parameters, InvalidParameters } = await ssm.getParameters({
         Names: [
@@ -148,12 +153,14 @@ async function _loadDevSsm() {
             '/optidesk/dev/guildId',
             '/optidesk/dev/instatusHeartbeatUrl',
             '/optidesk/prod/posthogKey',
+            integrationsEnabledName,
         ],
         WithDecryption: true,
     }).promise();
 
-    if (InvalidParameters && InvalidParameters.length > 0) {
-        throw new Error(`Missing SSM parameters: ${InvalidParameters.join(', ')}`);
+    const missingRequired = (InvalidParameters ?? []).filter(name => name !== integrationsEnabledName);
+    if (missingRequired.length > 0) {
+        throw new Error(`Missing SSM parameters: ${missingRequired.join(', ')}`);
     }
 
     const p = Object.fromEntries(Parameters.map(param => [param.Name.split('/').pop(), param.Value]));
@@ -163,6 +170,7 @@ async function _loadDevSsm() {
         guildId:              p.guildId,
         posthogKey:           p.posthogKey,
         instatusHeartbeatUrl: p.instatusHeartbeatUrl,
+        integrationsEnabled: p.integrationsEnabled === 'true',
     };
 }
 

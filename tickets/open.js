@@ -333,7 +333,7 @@ async function openTicket(interaction, category, reason) {
             flags: MessageFlags.IsComponentsV2,
             components: [tagTxt1, row]
         })
-        return
+        return ticket
     } else if (tagTik === false) {
         const tagTxt1 = new TextDisplayBuilder().setContent(`Did we resolve your concern?\n-# If your open reason was stated and resolved above, and you still choose to ignore it, we will immediately close your ticket.`)
         const completeB = new ButtonBuilder()
@@ -346,7 +346,7 @@ async function openTicket(interaction, category, reason) {
             flags: MessageFlags.IsComponentsV2,
             components: [tagTxt1, row]
         })
-        return
+        return ticket
     } else {
         // Null
     }
@@ -354,6 +354,8 @@ async function openTicket(interaction, category, reason) {
     // Queue ticket
     await queueTicket(interaction, reason, { skipAck: true, channelId: ticket.id, anonymous: categoryIsAnon });
     await logEvent("ticketOperations", "info", `**${sanitizeReason(interaction.user.tag)}** has created a ticket:\n> -# Ticket ID: ${ticket.id}\n> Reason: \`${sanitizeReason(reason)}\``, interaction)
+
+    return ticket
 }
 
 

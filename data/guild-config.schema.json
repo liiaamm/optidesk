@@ -167,6 +167,9 @@
           "type": "boolean",
           "description": "Whether generated transcripts should trust rendered user content."
         },
+        "integrationsEnabled": {
+          "type": "boolean"
+        },
         "addNonStaffToTickets": {
           "type": "boolean",
           "description": "When false, the Add action only permits members with staff access to the ticket's category (the category's staffRoleId, its supervisorRoleId, the global supervisorRoleID, or the guild owner)."

@@ -154,6 +154,8 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
 
     substituting accordingly. Then, enable transcripts in your guild configuration (`settings.transcriptsEnabled`).
 
+Once you're done, you should check out the **Administrator Manual** for help on configuring OptiDesk. You can access that [here](https://optidesk.gitbook.io/w/)
+
 
 ### Cloud Installation
 

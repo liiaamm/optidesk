@@ -10,6 +10,7 @@ const { sanitizeReason } = require('../../utils/security');
 const {logEvent} = require("../../utils/logging");
 const { memberHasCategoryAccess } = require('../../utils/categoryAcl');
 const { reportCriticalFailure } = require('../../utils/telemetry');
+const bus = require('../../utils/integrations/bus');
 
 module.exports = async function finalCloseTicket(interaction, closeReason, closeAuthor, force) {
     const emojis = await loadEmojis(interaction.guild.id);
@@ -338,6 +339,15 @@ ${force ? `> -# ${emojis.shield.markdown} This ticket was closed without your in
             message: err?.message,
         });
     }
+
+    bus.emit('ticket.closed', {
+        ticketId: record.channelId,
+        guildId: interaction.guild.id,
+        closedBy: interaction.user.id,
+        category: record.category,
+        ticketCreatorId: record.ticketCreatorId,
+        reason: closeReason,
+    });
 
     // Delete channel
     try {

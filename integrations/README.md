@@ -30,7 +30,8 @@ The integration.json file should have the following attributes set:
 {
     "type": "OptiDesk Integration", // Unused but required
     "apiVersion": 1, // Internal API expected by your integration
-    "scopes": ["instance.info"] // Scope(s) requested by the integration
+    "scopes": ["instance.info"],
+    "commands": "commands.js"
 }
 ```
 Integrations are loaded into context and, when an event fires, OptiDesk will call your integration.
@@ -46,7 +47,14 @@ We highly reccommend installing and packaging integrations as git repositories.
     ```
     On GitHub, the URL for the repository is typically `https://github.com/authorusername/repositoryname.git`.
 
-2. Register it with OptiDesk
+2. Install its dependencies
+
+    From the integration directory, install its dependencies:
+    ```bash
+    npm install
+    ```
+
+3. Register it with OptiDesk
     
     Using the `integrations` npm script, register the integration using the repository name as shown in the new folder in `./integrations`:
     ```bash
@@ -97,8 +105,13 @@ Allows the integration to subscribe to **any** event fire from OptiDesk. Event f
 Integrations can register events on startup using `module.exports.setup` in their `index.js`:
 ```js
 module.exports.setup = async (ctx) => {
-    ctx.events.on('ticket.claimed'), (event) => {
+    ctx.events.on('ticket.claimed', (event) => {
         console.log(event); // Returns: { ticketId, guildId, claimedBy, category }
-    }
+    });
 }
 ```
+
+#### `tickets.write`
+Allows the integration to create tickets, including as someone. 
+
+#### `commands.register`

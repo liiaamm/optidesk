@@ -30,6 +30,12 @@ test('self-host guild config example matches the guild config schema', () => {
     expectValid(exampleConfig);
 });
 
+test('schema accepts guild integration opt-in', () => {
+    const config = clone(exampleConfig);
+    config.settings.integrationsEnabled = true;
+    expectValid(config);
+});
+
 test('schema accepts a prod-shaped guild config with categories, intellitags, and panel presets', () => {
     expectValid({
         serverId: '1424977254693343282',

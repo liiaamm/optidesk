@@ -68,6 +68,7 @@ async function main() {
     const licensingEnabled = await askQuestion('Enable licensing checks?', { type: 'boolean', defaultValue: false });
     const hostedEnforcementEnabled = await askQuestion('Enable hosted enforcement (global ban-lists)?', { type: 'boolean', defaultValue: false });
     const rateLimitEnabled = await askQuestion('Enable user rate limiting?', { type: 'boolean', defaultValue: true });
+    const integrationsEnabled = await askQuestion('Enable integrations?', { type: 'boolean', defaultValue: false });
 
     console.log('\n--- Database Configuration ---');
     console.log('OptiDesk supports multiple database engines:');
@@ -156,6 +157,7 @@ async function main() {
         licensingEnabled,
         hostedEnforcementEnabled,
         rateLimitEnabled,
+        integrationsEnabled,
         database: {
             type: dbType,
             ...(sqlitePath ? { sqlitePath } : {}),
@@ -192,6 +194,7 @@ async function main() {
     }
 
     guildConfig.serverId = guildId;
+    guildConfig.settings.integrationsEnabled = integrationsEnabled;
 
     // Guild-level settings (roles, channels, toggles) still need to be edited
     // by hand in this file — see readme.md "Configure OptiDesk".

@@ -96,7 +96,7 @@ const TABLE_SCHEMAS = [
 const DEV_HOME_GUILD_ID = '000000000000000000';
 
 const DEV_LICENSE_RECORD = {
-    licenseId:                 '',
+    licenseId:                 'DEV-0000-0000-0000',
     additionalServersLicensed: null,
     disabled:                  false,
     expires:                   null,

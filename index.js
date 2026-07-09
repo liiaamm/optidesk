@@ -14,6 +14,7 @@ const { loadIntegrations } = require('./utils/integrations/loader');
 
 async function main() {
 	let configPromise = null;
+	let client = null;
 
 	const steps = [];
 
@@ -53,7 +54,7 @@ async function main() {
 
 	steps.push(['Loading integrations', async () => {
 		const cfg = await configPromise;
-		if (cfg.integrationsEnabled) await loadIntegrations();
+		if (cfg.integrationsEnabled) await loadIntegrations(() => client);
 	}]);
 
 	steps.push(['Initializing client',          0]);
@@ -66,7 +67,7 @@ async function main() {
 
 	const { token, instatusHeartbeatUrl } = getConfig();
 
-	const client = new Client({
+	client = new Client({
 		intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages],
 		allowedMentions: { parse: ['users', 'roles'] },
 	});
@@ -90,6 +91,15 @@ async function main() {
 				console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 			}
 		}
+	}
+
+	const { getIntegrationCommands, buildIntegrationCommand } = require('./utils/integrations/commands');
+	for (const [name, entry] of getIntegrationCommands()) {
+		if (client.commands.has(name)) {
+			console.warn(`[integrations] ${entry.integration}: command "/${name}" collides with a core command — skipping`);
+			continue;
+		}
+		client.commands.set(name, buildIntegrationCommand(entry));
 	}
 
 	const eventsPath = path.join(__dirname, 'events');

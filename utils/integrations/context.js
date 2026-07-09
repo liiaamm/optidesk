@@ -1,7 +1,8 @@
 const bus = require('./bus');
 const { version } = require('../../package.json');
+const { createExternalTicket } = require('./tickets');
 
-function buildContext(name, scopes, registryEntry) {
+function buildContext(name, scopes, registryEntry, getClient = () => null) {
     const ctx = {
         name,
         config: registryEntry?.config ?? {},
@@ -14,6 +15,12 @@ function buildContext(name, scopes, registryEntry) {
 
     if (scopes.includes('instance.info')) {
         ctx.instance = { info: () => ({ version }) };
+    }
+
+    if (scopes.includes('tickets.write')) {
+        ctx.tickets = Object.freeze({
+            create: (input) => createExternalTicket(getClient, name, input),
+        });
     }
 
     return Object.freeze(ctx);

@@ -21,7 +21,6 @@
       "additionalProperties": false,
       "required": [
         "supervisorRoleID",
-        "blacklistRoleID",
         "priorityRoles",
         "pingOnPriorityRoles"
       ],

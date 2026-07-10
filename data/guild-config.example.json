@@ -3,7 +3,6 @@
   "access": {
     "supervisorRoleID": "000000000000000000",
     "supportMemberRoleID": null,
-    "blacklistRoleID": "000000000000000000",
     "priorityRoles": [],
     "pingOnPriorityRoles": []
   },

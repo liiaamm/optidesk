@@ -63,7 +63,7 @@ async function main() {
 	steps.push(['Authenticating with Discord',  0]);
 
 	const profileTag = IS_DEV ? ' [DEV]' : IS_CLOUD ? '' : ' [LOCAL]';
-	await showBanner(`v0.5${profileTag}`, steps);
+	await showBanner(`v0.5.1${profileTag}`, steps);
 
 	const { token, instatusHeartbeatUrl } = getConfig();
 

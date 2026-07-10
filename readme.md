@@ -4,14 +4,9 @@
 </h1>
 <h4>Enterprise-grade Discord ticketing that just works (and looks good!)</h4>
 
-![CI](https://img.shields.io/github/actions/workflow/status/liiaamm/OptiDesk/ci.yml?style=plastic) ![Alpha](https://img.shields.io/badge/status-experimental%20alpha-red?style=plastic)
+![CI](https://img.shields.io/github/actions/workflow/status/liiaamm/OptiDesk/ci.yml?style=plastic)
 
 **[Introduction](#introduction)** · **[Architecture](#architecture)** · **[Installation](#installation)** · **[Guild Configuration](#guild-configuration)** · **[License & Contributions](#license--contributions)**
-
-> [!CAUTION]
-> This branch is alpha, and is **not recommended for production**. The integrations update will introduce new security risks, and we *strongly* recommend you wait for the stable release. 
->
-> You have been warned!
 
 ----
 

@@ -10,6 +10,10 @@
 
 ----
 
+<p align="center">
+  <img src="./assets/optidesk_hero.webp" alt="OptiDesk ticket embed" width="640px">
+</p>
+
 ## Introduction
 **OptiDesk** is a versatile Discord-based ticketing and request management bot that helps you manage, organise and process tickets in your server, with customisability and reliability at its core. Unlike other solutions, OptiDesk includes features such as Intellitag (deterministic keyword matching to help resolve requests or get required details for staff), Flagging (CX warnings, Priority Roles) and other intelligent features to get your staff on the ground running.
 

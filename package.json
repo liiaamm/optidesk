@@ -23,6 +23,8 @@
     "commands": "node deploy-commands.js",
     "emojis": "node scripts/download-emoji-pack.js",
     "integrations": "node scripts/integrations.js",
+    "validate": "node scripts/validate-config.js",
+    "validate:guild": "node scripts/validate-config.js --guild",
     "test": "jest",
     "lint": "eslint . --ext .js"
   },

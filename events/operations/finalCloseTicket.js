@@ -206,7 +206,7 @@ module.exports = async function finalCloseTicket(interaction, closeReason, close
 
     let transcriptDisclaimer = '';
     if (transcriptAvailable) {
-        transcriptDisclaimer = ` A copy of your transcript is available below for **90 days** after closure, after which it's permanently deleted.`;
+        transcriptDisclaimer = ` `;
     } else if (config.settings.transcriptsEnabled && transcriptFailed) {
         transcriptDisclaimer = ` A transcript couldn't be generated for this ticket.`;
     }

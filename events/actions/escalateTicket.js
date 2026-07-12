@@ -22,7 +22,12 @@ module.exports = async function escalateTicket(interaction) {
     let sourceRecord;
     try {
         sourceRecord = await getTicketByChannel(interaction.channel.id);
-    } catch {
+    } catch (err) {
+        console.error('[escalateTicket] Failed to fetch ticket record:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nI couldn't fetch this ticket. Please try again in a few minutes.`);
     }
     if (!sourceRecord) {

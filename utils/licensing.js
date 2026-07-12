@@ -46,7 +46,11 @@ async function createLicense(ownerId, type, serverLock, expires) {
     };
     await dynamo.put(params).promise();
     return {success: true, licenseId: params.Item.licenseId}
-    } catch {
+    } catch (err) {
+        console.error('[licensing] createLicense failed:', {
+            ownerId,
+            message: err?.message,
+        });
         return {
             success: false,
             reason: "Database failure"

@@ -16,7 +16,12 @@ module.exports = async function relQueueTicket(interaction) {
     let record;
     try {
         record = await getTicketByChannel(interaction.channel.id);
-    } catch {
+    } catch (err) {
+        console.error('[relQueueTicket] Failed to fetch ticket record:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         await safeReply(interaction, `**An error occurred**\nI couldn't fetch this ticket. Please check the OptiDesk outage page and our official Discord. Try again in a few minutes, and if the error still persists, contact support.`);
         return;
     }
@@ -93,13 +98,23 @@ module.exports = async function relQueueTicket(interaction) {
                 flags: MessageFlags.Ephemeral
             });
         }
+        console.error('[relQueueTicket] Failed to release ticket back to queue:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nI couldn't update this ticket. Please try again in a few minutes, and if the error still persists, contact support.`);
     }
 
     // Re-queue
     try {
         await queueTicket(interaction, record.reason, { skipAck: true });
-    } catch {
+    } catch (err) {
+        console.error('[relQueueTicket] Ticket released but re-queue failed:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nThe ticket was released but couldn't be re-queued. Please try again in a few minutes, and if the error still persists, contact support.`);
     }
 

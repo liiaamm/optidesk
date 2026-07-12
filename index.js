@@ -63,7 +63,7 @@ async function main() {
 	steps.push(['Authenticating with Discord',  0]);
 
 	const profileTag = IS_DEV ? ' [DEV]' : IS_CLOUD ? '' : ' [LOCAL]';
-	await showBanner(`v0.5.1${profileTag}`, steps);
+	await showBanner(`v0.5.1.1${profileTag}`, steps);
 
 	const { token, instatusHeartbeatUrl } = getConfig();
 
@@ -144,6 +144,6 @@ async function main() {
 }
 
 main().catch((err) => {
-	console.error(err?.message || err);
+	console.error('[startup] Fatal error during startup:', err);
 	process.exitCode = 1;
 });

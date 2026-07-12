@@ -13,7 +13,12 @@ module.exports = async function forceCloseQueryTicket(interaction) {
     let record;
     try {
         record = await getTicketByChannel(interaction.channel.id);
-    } catch {
+    } catch (err) {
+        console.error('[forceCloseQueryTicket] Failed to fetch ticket record:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nI couldn't fetch this ticket. Please try again in a moment.`);
     }
     if (!record) {

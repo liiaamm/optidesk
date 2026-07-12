@@ -42,8 +42,13 @@ async function safeReply(interaction, textContent, { accentColor = COLOR_ERROR, 
         } else {
             return await interaction.reply(payload);
         }
-    } catch {
-        // Interaction expired or otherwise invalid — nothing we can do
+    } catch (err) {
+        console.warn('[safeReply] Could not deliver error message to user:', {
+            guildId: interaction.guildId,
+            interactionId: interaction.id,
+            command: interaction.commandName || interaction.customId,
+            message: err?.message,
+        });
         return null;
     }
 }
@@ -63,7 +68,13 @@ async function safeFollowUp(interaction, textContent, { accentColor = COLOR_ERRO
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components
         });
-    } catch {
+    } catch (err) {
+        console.warn('[safeFollowUp] Could not deliver follow-up message to user:', {
+            guildId: interaction.guildId,
+            interactionId: interaction.id,
+            command: interaction.commandName || interaction.customId,
+            message: err?.message,
+        });
         return null;
     }
 }

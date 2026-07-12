@@ -9,6 +9,19 @@ function warnTelemetry(message, details) {
     console.warn(message, details);
 }
 
+function logErrorLocal(error, context) {
+    if (process.env.NODE_ENV === 'test') return;
+    console.error('[optidesk:error]', context, error);
+}
+
+function posthogEnabled() {
+    try {
+        return getConfig().posthogEnabled;
+    } catch {
+        return false;
+    }
+}
+
 function gitBranch() {
     if (!IS_DEV) return undefined;
     if (_gitBranch !== undefined) return _gitBranch;
@@ -67,7 +80,7 @@ function ensureGuildIdentified(distinctId) {
 }
 
 function captureEvent(distinctId, event, properties = {}, options = {}) {
-    if (!getConfig().posthogEnabled) return;
+    if (!posthogEnabled()) return;
     const branch = gitBranch();
     const groups = resolveGroups(distinctId, properties, options.groups);
     ensureGuildIdentified(distinctId);
@@ -88,7 +101,8 @@ function captureEvent(distinctId, event, properties = {}, options = {}) {
 }
 
 function captureException(error, distinctId, properties = {}, options = {}) {
-    if (!getConfig().posthogEnabled) return;
+    logErrorLocal(error, { distinctId, ...properties });
+    if (!posthogEnabled()) return;
     const branch = gitBranch();
     const groups = resolveGroups(distinctId, properties, options.groups);
     ensureGuildIdentified(distinctId);
@@ -109,7 +123,6 @@ function captureException(error, distinctId, properties = {}, options = {}) {
 }
 
 function reportCriticalFailure(error, component, failure_type, props = {}) {
-    if (!getConfig().posthogEnabled) return;
     const { distinctId, ...rest } = props;
     const id = distinctId ?? (rest.guild_id ? `guild:${rest.guild_id}` : 'system');
     const payload = {
@@ -125,7 +138,7 @@ function reportCriticalFailure(error, component, failure_type, props = {}) {
 
 // POSTHOG!!! (more telemetry, but for guilds)
 function identifyGuild(guildId, properties = {}) {
-    if (!getConfig().posthogEnabled) return;
+    if (!posthogEnabled()) return;
     if (guildId == null) return;
     const key = String(guildId);
     try {

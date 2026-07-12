@@ -13,7 +13,12 @@ module.exports = async function integrationsTicket(interaction) {
     let record;
     try {
         record = await getTicketByChannel(interaction.channel.id);
-    } catch {
+    } catch (err) {
+        console.error('[integrationsTicket] Failed to fetch ticket record:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nI couldn't fetch this ticket. Please try again in a few minutes.`);
     }
     if (!record) {

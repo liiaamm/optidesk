@@ -84,6 +84,11 @@ module.exports = async function finalCloseTicket(interaction, closeReason, close
             }
             return await interaction.reply(inlinePayload);
         }
+        console.error('[finalCloseTicket] Failed to acquire close lock:', {
+            guildId: interaction.guild.id,
+            channelId: interaction.channel.id,
+            message: err?.message,
+        });
         return await safeReply(interaction, `**An error occurred**\nCouldn't initiate ticket closure. Please try again in a moment.`);
     }
 

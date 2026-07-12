@@ -122,19 +122,20 @@ module.exports = async function queueTicket(interaction, reason, { skipAck = fal
         .setStyle(ButtonStyle.Secondary)
         .setCustomId('claimTicket')
 
-    const section1 = new SectionBuilder()
-        .addTextDisplayComponents(header)
-    if (config.appearance.serverLogoURL) {
-        section1.setThumbnailAccessory(new ThumbnailBuilder().setURL(config.appearance.serverLogoURL))
-    }
-
     const section2 = new SectionBuilder()
         .addTextDisplayComponents(claimTxt)
         .setButtonAccessory(staffClaimB)
 
     const separator = new SeparatorBuilder().setDivider(true).setSpacing(SeparatorSpacingSize.Large)
 
-    await containerB.addSectionComponents(section1)
+    if (config.appearance.serverLogoURL) {
+        const section1 = new SectionBuilder()
+            .addTextDisplayComponents(header)
+            .setThumbnailAccessory(new ThumbnailBuilder().setURL(config.appearance.serverLogoURL))
+        await containerB.addSectionComponents(section1)
+    } else {
+        await containerB.addTextDisplayComponents(header)
+    }
     await containerB.addSeparatorComponents(separator)
     await containerB.addSectionComponents(section2)
 

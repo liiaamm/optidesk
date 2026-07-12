@@ -8,10 +8,8 @@
 
 **[Introduction](#introduction)** · **[Architecture](#architecture)** · **[Installation](#installation)** · **[Guild Configuration](#guild-configuration)** · **[License & Contributions](#license--contributions)**
 
-> [!CAUTION]
-> This branch is alpha, and is **not recommended for production**. The integrations update will introduce new security risks, and we *strongly* recommend you wait for the stable release. 
->
-> You have been warned!
+> [!NOTE]
+> This branch is depreciated and will be deleted.
 
 ----
 

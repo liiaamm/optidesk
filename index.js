@@ -120,8 +120,6 @@ async function main() {
 		client.user.setPresence({
 		activities: [{
 			name: '✨ | optidesk.dev',
-			// name: `🦖 | it's national dinosaur day!`,
-			// name: '🐈 | meow!!!',
 			type: ActivityType.Competing,
 			}]
 		},

@@ -202,6 +202,19 @@ async function main() {
     fs.writeFileSync(guildConfigPath, JSON.stringify(guildConfig, null, 2));
     console.log(`\n✅ Saved default guild configuration template to ${guildConfigPath}\n`);
 
+    // --- UTILS/EMOJIS.JS ---
+    // Copied, never edited in place upstream: `npm run emojis` writes the uploaded
+    // application emoji IDs here, and utils/emojis.js is gitignored so updates
+    // can't wipe them. Never overwrite an existing copy — that IS the emoji set.
+    const emojisExamplePath = path.join(__dirname, '..', 'utils', 'emojis.example.js');
+    const emojisPath = path.join(__dirname, '..', 'utils', 'emojis.js');
+    if (fs.existsSync(emojisPath)) {
+        console.log(`✅ Kept existing emoji set at ${emojisPath}\n`);
+    } else {
+        fs.copyFileSync(emojisExamplePath, emojisPath);
+        console.log(`✅ Created emoji set at ${emojisPath}\n`);
+    }
+
     // --- PM2 ECOSYSTEM.CONFIG.JS ---
     console.log('--- Phase 3: Generating PM2 Ecosystem File ---\n');
     

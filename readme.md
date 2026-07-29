@@ -136,7 +136,12 @@ Sidenote: the commands assume a bash shell. If you're running this somewhere els
    npm run emojis -- --color "#9DE8E4" --upload --prefix local_ --set SelfHostEmojis
    ```
 
-   Replace the hex, prefix (as shown in the emoji name) and set name as needed. The script updates `utils/emojis.js` with the uploaded emoji IDs. Then set `appearance.emojiSet` in `data/guild-config.json` to the set name you used.
+   Replace the hex, prefix (as shown in the emoji name) and set name as needed. The script copies `utils/emojis.example.js` to `utils/emojis.js` (if it isn't there already) and writes the uploaded emoji IDs into that copy. Then set `appearance.emojiSet` in `data/guild-config.json` to the set name you used.
+
+   `utils/emojis.js` is gitignored, like `config.json` and `data/guild-config.json`, so updates leave your uploaded emoji IDs alone. **Don't delete it** - it is your emoji set. If it is lost, re-run the same command: already-uploaded emojis are reused by name, so nothing is duplicated on Discord and the set is rebuilt.
+
+   > [!NOTE]
+   > Upgrading from v0.5.1.2 or earlier? `utils/emojis.js` used to be tracked, so `git pull` reports it as *deleted by them* - **keep your local copy** (`git checkout --ours utils/emojis.js` or just leave the file in place).
 
 7. **Run the bot**
 

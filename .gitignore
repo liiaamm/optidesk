@@ -3,6 +3,7 @@ config.json
 ecosystem.config.js
 data/guild-config.json
 data/integrations.json
+utils/emojis.js
 data/dynamo/
 data/*.db
 backendutils/

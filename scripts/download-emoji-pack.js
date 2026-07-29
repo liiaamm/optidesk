@@ -32,7 +32,11 @@ const path = require('path');
 const https = require('https');
 
 const ROOT = path.join(__dirname, '..');
+// The generated set lands in utils/emojis.js, which is gitignored — a tracked
+// file would be wiped on every update, silently dropping guilds back to
+// OptiDeskEmojis (IDs that only resolve for the official OptiDesk application).
 const EMOJIS_JS_PATH = path.join(ROOT, 'utils', 'emojis.js');
+const EMOJIS_JS_EXAMPLE_PATH = path.join(ROOT, 'utils', 'emojis.example.js');
 const DEFAULT_SYSTEM_DIR = path.join(ROOT, 'emoji-assets');
 const DEFAULT_SET_NAME = 'SelfHostEmojis';
 const DISCORD_EMOJI_MAX_BYTES = 256 * 1024;
@@ -451,8 +455,22 @@ function printUploadOutput(results, args, expectedEntries) {
     }
 }
 
+/**
+ * Create the local utils/emojis.js from the tracked example on first run, so
+ * self-hosters never have to copy it by hand.
+ */
+function ensureLocalEmojisJs() {
+    if (fs.existsSync(EMOJIS_JS_PATH)) return;
+    if (!fs.existsSync(EMOJIS_JS_EXAMPLE_PATH)) {
+        throw new Error(`Missing ${EMOJIS_JS_EXAMPLE_PATH} — reinstall or re-clone OptiDesk.`);
+    }
+    fs.copyFileSync(EMOJIS_JS_EXAMPLE_PATH, EMOJIS_JS_PATH);
+    console.log('Created utils/emojis.js from utils/emojis.example.js.');
+}
+
 async function main() {
     const args = parseArgs(process.argv);
+    ensureLocalEmojisJs();
     const emojiSrc = fs.readFileSync(EMOJIS_JS_PATH, 'utf8');
     const icons = extractMaterialIcons(emojiSrc);
 

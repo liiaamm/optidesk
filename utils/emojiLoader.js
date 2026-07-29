@@ -1,6 +1,16 @@
-const emojiSets = require('./emojis.js');
+const fs = require('node:fs');
+const path = require('node:path');
+
 const { getGuildConfig } = require('./guildConfig');
 const { reportCriticalFailure } = require('./telemetry');
+
+// utils/emojis.js is the live, gitignored copy — `npm run emojis` writes the
+// uploaded application emoji IDs into it, and updates can't clobber it.
+// utils/emojis.example.js is the tracked default, used when setup hasn't run.
+const LOCAL_EMOJIS_PATH = path.join(__dirname, 'emojis.js');
+const emojiSets = fs.existsSync(LOCAL_EMOJIS_PATH)
+    ? require('./emojis.js')
+    : require('./emojis.example.js');
 
 /**
  * Loads the correct emoji set based on guild configuration. Makes OptiDesk, OptiDesk!
@@ -28,9 +38,11 @@ async function loadEmojis(guildId) {
             new Error(`Unknown emoji set: ${setName}`),
             'emojiLoader',
             'unknown_emoji_set',
-            { guild_id: guildId, setName }
+            { guild_id: guildId, setName, availableSets: Object.keys(emojiSets) }
         );
-        console.warn(`[emojiLoader] Emoji set "${setName}" not found for guild ${guildId}, falling back to OptiDeskEmojis`);
+        console.warn(`[emojiLoader] Emoji set "${setName}" not found for guild ${guildId}, falling back to OptiDeskEmojis (available: ${Object.keys(emojiSets).join(', ')})`);
+        console.warn('[emojiLoader] On a self-host, OptiDeskEmojis IDs belong to the official OptiDesk application and will NOT render. '
+            + `Regenerate the set with: npm run emojis -- --color "#9DE8E4" --upload --prefix local_ --set ${setName}`);
         return emojiSets.OptiDeskEmojis;
     }
 

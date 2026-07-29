@@ -11,7 +11,6 @@ const { captureEvent } = require('../../utils/telemetry');
 module.exports = async function requestCloseTicket(interaction, reason) {
     const emojis = await loadEmojis(interaction.guild.id);
     const config = await getGuildConfig(interaction.guild.id);
-    const closeTxt = new TextDisplayBuilder().setContent(`-# ${emojis.ticketresolved.markdown} ***${interaction.user}** wants to close this ticket.*\n${config.layout.presets.closeRequestMessage}\n\`\`\`Reason: ${sanitizeReason(reason)}\`\`\``)
     const confirmB = new ButtonBuilder()
         .setCustomId('finalCloseTicket')
         .setLabel(`Close`)
@@ -29,6 +28,7 @@ module.exports = async function requestCloseTicket(interaction, reason) {
 
     // DB
     const channelId = interaction.channel.id
+    let record;
     try {
         const updateParams = {
             TableName: TABLE_TICKETS,
@@ -43,7 +43,8 @@ module.exports = async function requestCloseTicket(interaction, reason) {
             },
             ReturnValues: "ALL_NEW"
         };
-        await dynamo.update(updateParams).promise();
+        const result = await dynamo.update(updateParams).promise();
+        record = result.Attributes;
     } catch (err) {
         if (err.code === 'ConditionalCheckFailedException') {
             let pendingAuthor = null;
@@ -74,13 +75,17 @@ module.exports = async function requestCloseTicket(interaction, reason) {
         return await safeReply(interaction, `**An error occurred**\nThe request could not be saved. Please try again in a moment. If this persists, contact support.`);
     }
 
+    const ownerId = record?.ticketCreatorId;
+    const ownerPrefix = ownerId ? `<@${ownerId}>, ` : '';
+    const closeTxt = new TextDisplayBuilder().setContent(`-# ${emojis.ticketresolved.markdown} *${ownerPrefix}**${interaction.user}** wants to close this ticket.*\n${config.layout.presets.closeRequestMessage}\n\`\`\`Reason: ${sanitizeReason(reason)}\`\`\``)
+
     try {
         const ticket = await interaction.guild.channels.fetch(interaction.channel.id);
         await ticket.send({
             flags: MessageFlags.IsComponentsV2,
             components: [closeTxt,row],
             fetchReply: true,
-            allowedMentions: { users: [interaction.user.id] }
+            allowedMentions: { users: [interaction.user.id, ownerId].filter(Boolean) }
         })
     } catch (err) {
         console.warn('[requestCloseTicket] Failed to send close request message:', {
